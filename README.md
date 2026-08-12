@@ -19,20 +19,18 @@ Total ~660KB, most of it the two images.
 
 | What | Where |
 |---|---|
-| Confirm both live URLs resolve | see **Domains** below |
 | `og:image` → absolute URL | `index.html` head |
-| Check the year reads right | `index.html`, the `2025` next to "Selected work" |
 
 Everything else is wired.
 
 ### Domains
 
 ```
-Case study   https://kiranaclub_casestudy.vivekdesigns.xyz
-Visuals      https://ui_library.vivekdesigns.xyz
+Case study   https://kiranaclub-casestudy.vivekdesigns.xyz
+Visuals      https://ui-library.vivekdesigns.xyz
 ```
 
-Both open in a new tab. **Neither subdomain currently resolves** — checked `A` and `CNAME`, both empty, while `vivekdesigns.xyz` itself resolves fine. Either they aren't pointed yet, or the underscore is the problem: `_` is not a legal character in a DNS hostname label (letters, digits, hyphens only), and some DNS providers refuse to create such a record. If your registrar won't save them, switch to hyphens — `kiranaclub-casestudy` / `ui-library` — and update the two `href`s.
+Both open in a new tab. Both resolve — `CNAME` on each points to Vercel (`*.vercel-dns-*.com`). The original underscore versions (`kiranaclub_casestudy`, `ui_library`) never resolved; `_` isn't a legal character in a DNS hostname label, and the hyphenated versions above replaced them for exactly that reason.
 
 ### og:image
 
