@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Vivek Singh — Product Designer</title>
+<meta name="description" content="Product designer. One project, told properly.">
+
+<meta property="og:title" content="Vivek Singh — Product Designer">
+<meta property="og:description" content="Product designer. One project, told properly.">
+<meta property="og:type" content="website">
+<!-- swap both to absolute URLs (https://yourdomain/...) once the domain is live —
+     most platforms will not resolve a relative og:image -->
+<meta property="og:image" content="assets/project-hero.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="assets/project-hero.jpg">
+<meta name="theme-color" content="#FAFAF9">
+
+<!-- inline favicon: no extra request, no 404 -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111110'/%3E%3Cpath d='M9 10l7 13 7-13' fill='none' stroke='%23FAFAF9' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<a class="skip" href="#work">Skip to work</a>
+
+<header class="nav">
+  <a class="nav__mark" href="/">VS</a>
+  <nav class="nav__links" aria-label="Primary">
+    <a href="#work">Work</a>
+    <a href="#connect">Connect</a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ─────────────  HERO  ───────────── -->
+  <section class="hero">
+    <h1 class="hero__title reveal">
+      Hey,<br>I&rsquo;m Vivek
+    </h1>
+    <p class="hero__sub reveal" data-delay="1">
+      <span class="dash">&mdash;</span> a product designer who&rsquo;d rather
+      show you one project properly than six of them briefly.
+    </p>
+  </section>
+
+  <!-- ─────────────  THE PROJECT  ───────────── -->
+  <section class="work" id="work">
+
+    <div class="work__meta reveal">
+      <span class="label">Selected work</span>
+      <span class="label label--dim">2026</span>
+    </div>
+
+    <!-- image through Outcome is one link — cursor carries the affordance -->
+    <a class="work__link" href="https://kiranaclub_casestudy.vivekdesigns.xyz" target="_blank" rel="noopener" aria-label="Open the KiranaClub case study">
+
+      <div class="work__media reveal">
+        <img src="assets/project-hero.jpg"
+             alt="Concept visual for the KiranaClub reordering flow: a phone showing a usual-order review screen, with the app's own पिछला ऑर्डर interface floating beside it."
+             width="1536" height="1024" loading="eager" decoding="async">
+      </div>
+
+      <div class="work__body">
+        <h2 class="work__title reveal">KiranaClub</h2>
+        <p class="work__line reveal" data-delay="1">
+          A known-basket reordering flow for Kirana retailers who buy the same
+          20&ndash;30 products every time &mdash; and check every price before
+          they trust it.
+        </p>
+
+        <dl class="outcomes reveal" data-delay="2">
+          <div class="outcome">
+            <dt class="outcome__k">Role</dt>
+            <dd class="outcome__v">Research&nbsp;+&nbsp;design<span class="q">solo</span></dd>
+          </div>
+          <div class="outcome">
+            <dt class="outcome__k">Span</dt>
+            <dd class="outcome__v">2 weeks<span class="q">end to end</span></dd>
+          </div>
+          <div class="outcome">
+            <dt class="outcome__k">Outcome</dt>
+            <dd class="outcome__v outcome__v--lead">
+              15&ndash;20<i>min</i> <b>&rarr;</b> 5&ndash;7<i>min</i>
+              <span class="q">observed in testing, n&thinsp;=&thinsp;3</span>
+            </dd>
+          </div>
+        </dl>
+      </div>
+
+    </a>
+  </section>
+
+  <!-- ─────────────  ABOUT  ───────────── -->
+  <section class="about" id="about">
+    <div class="about__portrait reveal">
+      <img src="assets/portrait.jpg" alt="Portrait of Vivek Singh" width="757" height="946" loading="lazy" decoding="async">
+    </div>
+    <div class="about__text">
+      <span class="label reveal">About</span>
+      <p class="reveal" data-delay="1">
+        I design product interfaces, mostly for things that are more
+        complicated underneath than they look on the surface.
+      </p>
+      <p class="reveal" data-delay="2">
+        I care about the decision behind a screen more than the screen.
+        Most of my process is arguing with myself about what to cut.
+      </p>
+    </div>
+  </section>
+
+  <!-- ─────────────  UI SITE  ───────────── -->
+  <section class="aside">
+    <a class="aside__link reveal" href="https://ui_library.vivekdesigns.xyz" target="_blank" rel="noopener">
+
+      <span class="aside__text">
+        <span class="label">Also</span>
+        <span class="aside__head">Visuals</span>
+        <span class="aside__sub">
+          A separate collection of websites focused on UI design.
+        </span>
+        <span class="aside__cue">
+          View the collection
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8h13M9 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        </span>
+      </span>
+
+      <!-- decorative: monochrome ink, drops fuse via an SVG goo
+           filter and roam the whole panel, chasing the cursor.
+           No mask on this element, ever — Safari drops an SVG
+           filter outright when a CSS mask sits on an ancestor
+           of the filtered element. -->
+      <span class="ink" aria-hidden="true">
+        <svg class="ink__defs" width="0" height="0">
+          <filter id="goo-ink" color-interpolation-filters="sRGB"
+                  x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/>
+            <feColorMatrix in="blur" mode="matrix"
+              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -10"/>
+          </filter>
+        </svg>
+        <span class="ink__field">
+          <span class="drop drop--1"></span>
+          <span class="drop drop--2"></span>
+          <span class="drop drop--3"></span>
+          <span class="drop drop--4"></span>
+          <span class="drop drop--5"></span>
+        </span>
+      </span>
+    </a>
+  </section>
+
+</main>
+
+<!-- ─────────────  CONNECT  ───────────── -->
+<footer class="connect" id="connect">
+  <h2 class="connect__title reveal">
+    Let&rsquo;s talk.
+  </h2>
+
+  <div class="connect__grid">
+    <div class="reveal" data-delay="1">
+      <span class="label">Email</span>
+      <button class="copy" type="button" data-copy="viveksingh.work001@gmail.com" data-fallback-href="mailto:viveksingh.work001@gmail.com">
+        <span class="copy__text">viveksingh.work001@gmail.com</span>
+        <span class="copy__hint" aria-hidden="true">Copy</span>
+      </button>
+      <span class="copy__done" role="status" aria-live="polite"></span>
+    </div>
+
+    <div class="reveal" data-delay="2">
+      <span class="label">Phone</span>
+      <button class="copy" type="button" data-copy="+91 63061 95731" data-fallback-href="tel:+916306195731">
+        <span class="copy__text">+91 63061 95731</span>
+        <span class="copy__hint" aria-hidden="true">Copy</span>
+      </button>
+      <span class="copy__done" role="status" aria-live="polite"></span>
+    </div>
+  </div>
+
+  <div class="connect__foot reveal">
+    <span>&copy; <span id="year">2026</span> Vivek Singh</span>
+    <span>Built by hand</span>
+  </div>
+</footer>
+
+<script src="main.js" defer></script>
+</body>
+</html>

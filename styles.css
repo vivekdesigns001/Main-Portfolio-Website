@@ -1,0 +1,562 @@
+/* ═══════════════════════════════════════════
+   Tokens
+   ═══════════════════════════════════════════ */
+:root{
+  --bg:        #FAFAF9;
+  --ink:       #111110;
+  --muted:     #6B6B65;
+  --rule:      #E4E4DF;
+  --accent:    #A8401A;      /* used exactly twice. keep it that way. */
+  --good:      #3E6B4F;      /* one job: the outcome arrow. a decrease is good news. */
+
+  --pad:       clamp(20px, 5vw, 64px);
+  --gap:       clamp(48px, 9vw, 128px);
+
+  --t-meta:    12px;
+  --t-body:    clamp(1rem, 0.95rem + 0.25vw, 1.0625rem);
+  --t-lead:    clamp(1.25rem, 1.05rem + 0.9vw, 1.75rem);
+  --t-mid:     clamp(2rem, 1.4rem + 2.6vw, 3.75rem);
+  --t-big:     clamp(2.75rem, 1.5rem + 5.4vw, 6rem);
+  --t-display: clamp(3.5rem, 1.6rem + 8.6vw, 8.25rem);
+
+  --ease:      cubic-bezier(.16,1,.3,1);
+}
+
+/* ═══════════════════════════════════════════
+   Reset
+   ═══════════════════════════════════════════ */
+*,*::before,*::after{ box-sizing:border-box; }
+html{ -webkit-text-size-adjust:100%; }
+body,h1,h2,p,dl,dd,figure{ margin:0; }
+img,svg{ display:block; max-width:100%; }
+button{ font:inherit; color:inherit; background:none; border:0; padding:0; cursor:pointer; }
+a{ color:inherit; text-decoration:none; }
+
+html{ scroll-behavior:smooth; }
+@media (prefers-reduced-motion:reduce){ html{ scroll-behavior:auto; } }
+
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Inter","Inter var",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size:var(--t-body);
+  line-height:1.55;
+  font-feature-settings:"cv05" 1,"cv11" 1,"ss01" 1;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
+}
+
+::selection{ background:var(--ink); color:var(--bg); }
+
+/* custom cursor — trail is drawn on a canvas; this just hides the system arrow */
+.trail-canvas{
+  position:fixed; inset:0;
+  pointer-events:none;
+  z-index:9999;
+  transition:opacity .25s var(--ease);   /* fades out under the hover ring */
+}
+html.custom-cursor, html.custom-cursor *{ cursor:none !important; }
+
+/* ── cursor ring ─────────────────────────────
+   Outer element carries position only (updated every
+   frame in JS, no CSS transition — instant tracking).
+   Inner element carries the visible state (size, border,
+   label, opacity) and transitions on hover in/out. Two
+   layers so the two kinds of change never fight the
+   same `transform` transition.                        */
+.cursor-ring{
+  position:fixed; top:0; left:0;
+  pointer-events:none;
+  z-index:10000;
+  will-change:transform;
+}
+.cursor-ring__inner{
+  position:absolute; top:0; left:0;
+  width:64px; height:64px;
+  margin:-32px 0 0 -32px;
+  border-radius:50%;
+  border:1.5px solid var(--ink);
+  /* not a colour fill — a near-white scrim, just enough that the
+     label stays legible over the dark ink blob or a busy photo */
+  background:rgba(250,250,249,.85);
+  -webkit-backdrop-filter:blur(3px);
+          backdrop-filter:blur(3px);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0;
+  transform:scale(.4);
+  transition:opacity .35s var(--ease), transform .35s var(--ease),
+             border-color .35s var(--ease), width .35s var(--ease),
+             height .35s var(--ease), margin .35s var(--ease);
+}
+.cursor-ring.is-active .cursor-ring__inner{ opacity:1; transform:scale(1); }
+.cursor-ring.is-big .cursor-ring__inner{
+  width:134px; height:134px; margin:-67px 0 0 -67px;
+}
+/* the one place this ring uses the accent — the main project link */
+.cursor-ring.variant-case .cursor-ring__inner{ border-color:var(--accent); }
+.cursor-ring.variant-case .cursor-ring__label{ color:var(--accent); }
+
+.cursor-ring__label{
+  font-size:.6875rem;
+  font-weight:500;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  color:var(--ink);
+  text-align:center;
+  padding:0 10px;
+  line-height:1.35;
+}
+
+@media (prefers-reduced-motion:reduce){
+  .cursor-ring{ display:none; }
+}
+
+.skip{
+  position:absolute; left:-9999px; top:0; z-index:100;
+  padding:12px 18px; background:var(--ink); color:var(--bg);
+}
+.skip:focus{ left:0; }
+
+:focus-visible{ outline:1.5px solid var(--ink); outline-offset:4px; border-radius:1px; }
+
+/* ═══════════════════════════════════════════
+   Shared atoms
+   ═══════════════════════════════════════════ */
+.label{
+  display:block;
+  font-size:var(--t-meta);
+  font-weight:500;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.label--dim{ color:#B4B4AC; }
+
+/* underlined link */
+.ul{
+  display:inline-block;
+  position:relative;
+  padding-bottom:2px;
+  background-image:linear-gradient(currentColor,currentColor);
+  background-size:100% 1px;
+  background-repeat:no-repeat;
+  background-position:0 100%;
+  transition:background-size .45s var(--ease), color .45s var(--ease);
+}
+.ul:hover{
+  background-size:0% 1px;
+  background-position:100% 100%;
+  color:var(--accent);          /* accent use 1 of 2 */
+}
+
+/* ═══════════════════════════════════════════
+   Nav
+   ═══════════════════════════════════════════ */
+.nav{
+  position:absolute; inset:0 0 auto 0; z-index:20;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:clamp(20px,3.4vw,34px) var(--pad);
+}
+.nav__mark{
+  font-size:var(--t-meta);
+  font-weight:600;
+  letter-spacing:.14em;
+}
+.nav__links{ display:flex; gap:clamp(20px,3vw,40px); }
+.nav__links a{
+  font-size:var(--t-meta);
+  font-weight:500;
+  letter-spacing:.1em;
+  color:var(--muted);
+  transition:color .4s var(--ease);
+}
+.nav__links a:hover{ color:var(--ink); }
+
+/* ═══════════════════════════════════════════
+   Hero
+   ═══════════════════════════════════════════ */
+.hero{
+  min-height:min(92vh,980px);
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  align-content:center;
+  gap:clamp(28px,4vw,56px) 0;
+  padding:clamp(140px,18vh,200px) var(--pad) clamp(64px,10vh,120px);
+}
+.hero__title{
+  grid-column:1 / 11;
+  font-size:var(--t-display);
+  font-weight:700;
+  line-height:.92;
+  letter-spacing:-.04em;
+  text-wrap:balance;
+}
+.hero__sub{
+  grid-column:5 / 12;
+  max-width:22ch;
+  font-size:var(--t-lead);
+  font-weight:500;
+  line-height:1.32;
+  letter-spacing:-.017em;
+}
+.dash{ color:var(--accent); }   /* accent use 2 of 2 */
+
+@media (max-width:720px){
+  .hero{ min-height:auto; }
+  .hero__title{ grid-column:1 / -1; }
+  .hero__sub{ grid-column:1 / -1; max-width:26ch; }
+}
+
+/* ═══════════════════════════════════════════
+   Work
+   ═══════════════════════════════════════════ */
+.work{ padding:0 var(--pad) var(--gap); }
+
+.work__meta{
+  display:flex; justify-content:space-between; align-items:baseline;
+  padding-bottom:14px;
+  border-bottom:1px solid var(--rule);
+  margin-bottom:clamp(24px,4vw,44px);
+}
+
+/* the whole block is the link — no button, the cursor carries the affordance */
+.work__link{ display:block; }
+
+.work__media{
+  display:block;
+  overflow:hidden;
+  background:#EDEDE8;          /* holds the shape before the image lands */
+  aspect-ratio:16 / 10;
+}
+.work__media img{
+  width:100%; height:100%;
+  object-fit:cover;
+  transform:scale(1.001);
+  transition:transform 1.1s var(--ease);
+}
+.work__link:hover .work__media img{ transform:scale(1.035); }
+
+.work__body{
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  gap:clamp(20px,3vw,40px) 0;
+  padding-top:clamp(32px,5vw,60px);
+}
+.work__title{
+  grid-column:1 / 7;
+  font-size:var(--t-mid);
+  font-weight:600;
+  line-height:1.02;
+  letter-spacing:-.035em;
+}
+
+.work__line{
+  grid-column:7 / 12;
+  max-width:38ch;
+  font-size:var(--t-body);
+  line-height:1.55;
+  color:var(--muted);
+  align-self:end;
+}
+
+/* ── Role / Span / Outcome ─────────────────── */
+.outcomes{
+  grid-column:1 / -1;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  border-top:1px solid var(--ink);   /* heavier rule — this row is a summary */
+}
+.outcome{
+  display:block;
+  padding:clamp(22px,2.8vw,34px) clamp(20px,2.6vw,36px) clamp(6px,1vw,12px) 0;
+}
+.outcome + .outcome{
+  padding-left:clamp(20px,2.6vw,36px);
+  border-left:1px solid var(--rule);
+}
+.outcome__k{
+  display:block;
+  font-size:var(--t-meta);
+  font-weight:500;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:clamp(10px,1.4vw,16px);
+}
+.outcome__v{
+  display:block;
+  font-size:clamp(1.0625rem,.95rem + .5vw,1.375rem);
+  font-weight:500;
+  line-height:1.25;
+  letter-spacing:-.022em;
+}
+/* the payoff column gets the size */
+.outcome__v--lead{
+  font-size:clamp(1.25rem,1rem + 1.05vw,1.875rem);
+  letter-spacing:-.03em;
+  white-space:nowrap;
+}
+.outcome__v i{                       /* unit, riding small next to the number */
+  font-style:normal;
+  font-size:.56em;
+  font-weight:500;
+  letter-spacing:.02em;
+  color:var(--muted);
+  margin-left:.28em;
+}
+.outcome__v b{
+  font-weight:500;
+  color:var(--good);                 /* green — the time went down, that's the win */
+  margin:0 .18em;
+}
+.q{                                  /* qualifier — never louder than the value */
+  display:block;
+  margin-top:.55em;
+  font-size:var(--t-meta);
+  font-weight:400;
+  letter-spacing:0;
+  line-height:1.45;
+  color:var(--muted);
+  white-space:normal;
+}
+
+@media (max-width:820px){
+  .work__title,.work__line{ grid-column:1 / -1; }
+  .outcomes{ grid-template-columns:1fr; }
+  .outcome{ padding:22px 0 20px; }
+  .outcome + .outcome{
+    padding-left:0;
+    border-left:0;
+    border-top:1px solid var(--rule);
+  }
+  .work__media{ aspect-ratio:4 / 3; }
+}
+
+/* ═══════════════════════════════════════════
+   About
+   ═══════════════════════════════════════════ */
+.about{
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  gap:clamp(32px,5vw,72px);
+  align-items:start;
+  padding:0 var(--pad) var(--gap);
+}
+.about__portrait{
+  grid-column:1 / 5;
+  overflow:hidden;
+  background:#EDEDE8;
+  aspect-ratio:4 / 5;
+}
+.about__portrait img{ width:100%; height:100%; object-fit:cover; }
+
+.about__text{ grid-column:6 / 12; }
+.about__text .label{ margin-bottom:clamp(20px,3vw,32px); }
+.about__text p{
+  font-size:var(--t-lead);
+  font-weight:500;
+  line-height:1.42;
+  letter-spacing:-.019em;
+  max-width:30ch;
+}
+.about__text p + p{ margin-top:1.1em; }
+
+@media (max-width:820px){
+  .about__portrait{ grid-column:1 / 8; }
+  .about__text{ grid-column:1 / -1; }
+}
+
+/* ═══════════════════════════════════════════
+   Aside — the UI site. Below the project, but
+   it should still stop the eye.
+   ═══════════════════════════════════════════ */
+.aside{ padding:0 var(--pad) var(--gap); }
+.aside__link{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:clamp(24px,4vw,56px);
+  padding:clamp(34px,4.4vw,52px) clamp(26px,3.2vw,42px);
+  border-radius:4px;
+  background:#F4F2EE;                 /* same neutral used for the portrait/hero placeholders */
+  border:1px solid var(--rule);
+  transition:border-color .5s var(--ease);
+}
+.aside__link:hover{ border-color:#D6D4CD; }
+
+.aside__text{ position:relative; z-index:1; display:block; max-width:34ch; }
+.aside__link .label{ margin-bottom:clamp(12px,1.6vw,18px); }
+
+.aside__head{
+  display:block;
+  font-size:clamp(1.5rem,1.1rem + 1.6vw,2.25rem);
+  font-weight:600;
+  line-height:1.08;
+  letter-spacing:-.032em;
+  color:var(--ink);
+}
+.aside__sub{
+  display:block;
+  margin-top:.55em;
+  max-width:44ch;
+  font-size:var(--t-body);
+  color:var(--muted);
+  letter-spacing:-.011em;
+}
+
+.aside__cue{
+  display:inline-flex; align-items:center; gap:9px;
+  margin-top:clamp(18px,2.2vw,26px);
+  font-size:var(--t-meta);
+  font-weight:500;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--ink);
+}
+.aside__cue svg{ width:14px; transition:transform .5s var(--ease); }
+.aside__link:hover .aside__cue svg{ transform:translateX(5px); }
+
+/* ── ink ───────────────────────────────────────
+   Reference: a black metaball that wraps the cursor
+   on hover — high-contrast, monochrome, viscous.
+   Built the same way that effect always is: several
+   blurred circles pushed back into focus by a sharp
+   alpha threshold (the "goo" filter), so overlapping
+   drops actually fuse into one body instead of just
+   crossfading. Roams the full panel — .aside__text
+   has its own z-index above this layer, so the copy
+   stays legible no matter where the ink sits; overflow
+   :hidden on this box is the only thing keeping it
+   from spilling past the panel's own edges.         */
+.ink{
+  position:absolute; inset:0;
+  overflow:hidden;
+  z-index:0;
+}
+.ink__defs{ position:absolute; width:0; height:0; }
+
+.ink__field{
+  position:absolute; inset:-30%;
+  -webkit-filter:url(#goo-ink);        /* belt-and-suspenders on older Safari */
+  filter:url(#goo-ink);
+}
+.drop{
+  position:absolute; top:50%; left:50%;
+  border-radius:50%;
+  background:#1B140D;                 /* one ink colour, full stop */
+  will-change:transform;
+  transform:translate3d(calc(-50% + var(--dx,0px)), calc(-50% + var(--dy,0px)), 0);
+}
+/* fixed sizes, not a % of the field — the field now
+   spans the whole panel, and a % width would make the
+   drops balloon on a wide screen instead of staying
+   the same physical size the effect was tuned around */
+.drop--1{ width:clamp(62px, 8vw,  112px); aspect-ratio:1; }
+.drop--2{ width:clamp(46px, 6vw,   84px); aspect-ratio:1; }
+.drop--3{ width:clamp(35px, 4.6vw, 64px); aspect-ratio:1; }
+.drop--4{ width:clamp(27px, 3.6vw, 50px); aspect-ratio:1; }
+.drop--5{ width:clamp(20px, 2.6vw, 38px); aspect-ratio:1; }
+
+@media (max-width:900px){
+  .ink{ display:none; }               /* text wins when space is tight */
+  .aside__text{ max-width:none; }
+}
+
+/* ═══════════════════════════════════════════
+   Connect
+   ═══════════════════════════════════════════ */
+.connect{
+  padding:clamp(64px,9vw,120px) var(--pad) clamp(28px,4vw,40px);
+  border-top:1px solid var(--rule);
+}
+.connect__title{
+  font-size:var(--t-big);        /* a notch below the hero — nothing outranks it */
+  font-weight:700;
+  line-height:.95;
+  letter-spacing:-.038em;
+  margin-bottom:clamp(48px,7vw,96px);
+}
+.connect__grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:clamp(32px,5vw,64px);
+  padding-bottom:clamp(64px,9vw,120px);
+}
+.connect__grid .label{ margin-bottom:14px; }
+
+.copy{
+  display:inline-flex; align-items:baseline; gap:12px;
+  flex-wrap:wrap;
+  font-size:var(--t-lead);
+  font-weight:500;
+  letter-spacing:-.019em;
+  text-align:left;
+}
+.copy__text{
+  background-image:linear-gradient(currentColor,currentColor);
+  background-size:100% 1px;
+  background-repeat:no-repeat;
+  background-position:0 100%;
+  transition:background-size .45s var(--ease);
+}
+.copy:hover .copy__text{ background-size:0% 1px; background-position:100% 100%; }
+.copy__hint{
+  font-size:var(--t-meta);
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+  opacity:0;
+  transition:opacity .4s var(--ease);
+}
+.copy:hover .copy__hint{ opacity:1; }
+.copy__done{
+  display:block;
+  margin-top:10px;
+  font-size:var(--t-meta);
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+  min-height:1em;
+}
+
+.connect__grid .ul{ display:block; width:fit-content; font-weight:500; }
+.connect__grid .ul + .ul{ margin-top:10px; }
+
+.connect__foot{
+  display:flex; justify-content:space-between; gap:20px;
+  padding-top:clamp(20px,3vw,28px);
+  border-top:1px solid var(--rule);
+  font-size:var(--t-meta);
+  letter-spacing:.06em;
+  color:var(--muted);
+}
+
+@media (max-width:820px){
+  .connect__grid{ grid-template-columns:1fr; gap:clamp(28px,5vw,40px); }
+}
+
+@media (max-width:640px){
+  .copy{ font-size:1.0625rem; }
+  .copy__hint{ display:none; }
+}
+
+/* ═══════════════════════════════════════════
+   Reveal — the entire motion system
+   ═══════════════════════════════════════════ */
+.reveal{
+  opacity:0;
+  transform:translateY(10px);
+  transition:opacity .6s var(--ease), transform .6s var(--ease);
+  transition-delay:calc(var(--d,0) * 80ms);
+}
+.reveal.in{ opacity:1; transform:none; }
+
+@media (prefers-reduced-motion:reduce){
+  .reveal{ opacity:1; transform:none; transition:none; }
+  *,*::before,*::after{
+    animation-duration:.01ms !important;
+    transition-duration:.01ms !important;
+  }
+}
